@@ -33,6 +33,13 @@ class LoginPageController: UIViewController ,UITextFieldDelegate {
          self.hideKeyboardWhenTappedAround()
          setHeightOfImageView(imageView)
           debugPrint(" the height of the logo image is \(imageHeight)")
+        
+        let value = UserDefaults.standard.string(forKey: "Email")
+          if value != nil
+          {
+            navigation()
+             
+          }
         //setHeightOfImageView(imageView)
         
         //emailView.endEditing(true)
@@ -85,34 +92,54 @@ class LoginPageController: UIViewController ,UITextFieldDelegate {
         
         if let error = invalidEmail(emailTextField.text!)
         {
-            let alert1 = UIAlertController(title: "Error", message: "Please Enter a Valid Email address", preferredStyle: .alert)
-            let okayButton = UIAlertAction(title: "okay", style: .default) { (action) in
-                alert1.dismiss(animated: true) {
-                }
+           createAlert("Error", "Enter a valid Email", "else")
         }
-            alert1.addAction(okayButton)
-            present(alert1, animated: true, completion: nil)
+        
+        if passwordTextField.text?.count == 0 {
+            createAlert("Error", "Password cannot be empty", "else")
         }
         else{
-        let alert = UIAlertController(title: "Saving", message: "Do you want to Save Login Details", preferredStyle: .alert)
+        createAlert("Saving","Do you want to Save Login Details", "Saving")
+    }
         
-        let yesButton = UIAlertAction(title: "Yes", style: .default) { (action) in
-            
-            let defaults = UserDefaults.standard
-            defaults.set(self.emailTextField.text!,forKey: "Email")
-            defaults.set(self.passwordTextField.text!,forKey: "Password")
-            print(defaults.object(forKey: "Email"))
-            print(defaults.object(forKey: "Password"))
-        }
-        
-        let noButton = UIAlertAction(title: "No", style: .default) { (action) in
-             print("You have not saved login details")
-        }
-        alert.addAction(yesButton)
-        alert.addAction(noButton)
-        present(alert, animated: true, completion: nil)
     }
     
+    func  createAlert(_ title: String,_ message: String,_ sender: String)
+    {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+          if(sender == "Saving")
+          {
+            let yesButton = UIAlertAction(title: "Yes", style: .default) { (action) in
+                
+                let defaults = UserDefaults.standard
+                defaults.set(self.emailTextField.text!,forKey: "Email")
+                defaults.set(self.passwordTextField.text!,forKey: "Password")
+                print(defaults.object(forKey: "Email"))
+                print(defaults.object(forKey: "Password"))
+                self.navigation()
+            }
+            
+            let noButton = UIAlertAction(title: "No", style: .default) { (action) in
+                 print("You have not saved login details")
+                self.navigation()
+            }
+            alert.addAction(yesButton)
+            alert.addAction(noButton)
+          }
+          else{
+            let okayButton = UIAlertAction(title: "okay", style: .default) { (action) in
+                alert.dismiss(animated: true) {
+                }
+        }
+            alert.addAction(okayButton)
+          }
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func navigation(){
+        let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "dashboardVC") as? DashboardViewController
+        self.navigationController?.pushViewController(vc!, animated: true)
     }
 }
 extension UIViewController {
